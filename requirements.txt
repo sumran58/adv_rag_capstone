@@ -1,0 +1,53 @@
+
+# Minimal install: everything EXCEPT the cross-encoder reranker.
+#
+# Use this file instead of requirements.txt if PyTorch will not install or
+# will not load on your machine - old CPUs, locked-down work laptops, or the
+# classic Windows error:
+#
+#   OSError: [WinError 1114] A dynamic link library (DLL) initialization
+#   routine failed. Error loading "...torch\lib\c10.dll"
+#
+# Install:
+#   pip install -r requirements-minimal.txt
+#
+# Then set this line in your .env file:
+#   RERANKER=simple
+#
+# Everything still works - ingestion, chunking, FAISS, hybrid retrieval,
+# multi-query, parent-child, context refinement, citations, memory, the
+# Streamlit UI and evaluation. Only the reranking step is downgraded from the
+# cross-encoder model to simple keyword overlap.
+
+# Core LangChain pieces: prompts, documents, splitters, OpenAI integration.
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-openai>=0.2.0
+langchain-text-splitters>=0.3.0
+
+# Local vector database (the default). No account or internet needed.
+faiss-cpu>=1.8.0
+
+# Optional remote vector database. Only used when VECTOR_DB=pinecone.
+langchain-pinecone>=0.2.0
+
+# Keyword / BM25 search, the second half of hybrid retrieval.
+rank-bm25>=0.2.2
+
+# Document loaders.
+pypdf>=5.0.0
+docx2txt>=0.8
+
+# Web UI. 1.50+ is required for the width="stretch" button argument.
+streamlit>=1.50.0
+
+# Reads the .env file.
+python-dotenv>=1.0.0
+
+# Only used by scripts/generate_sample_documents.py to create the sample
+# PDF and DOCX files that ship with the project.
+reportlab>=4.2.0
+python-docx>=1.1.0
+
+# Tests.
+pytest>=8.0.0
