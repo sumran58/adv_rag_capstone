@@ -121,5 +121,66 @@ def clean_text(text:str)->str:
     
     
 
-def add_metadata():
-    pass
+def add_metadata(documents:List[Document],path:Path)->List[Document]:
+    """
+     Attach source information to each Document so we can cite it later.
+
+    Retrieval returns a piece of text with no memory of where it came from.
+    By storing the filename, file type and page number now, the final answer
+    can say "technova_employee_handbook.pdf - Page 4".
+
+    Args:
+        documents: Documents produced by a loader.
+        path: Path of the file they were loaded from.
+
+    Returns:
+        The same documents, with extra metadata keys filled in.
+    """
+    for document in documents:
+        document.metadata["source"]=str(path)
+        document.metadata["filename"]=str(path.name)
+        document.metadata["doc_type"]=path.suffix.lower().lstrip(".")
+
+        if "page" in document.metadata:
+            document.metadata["page_number"]=int(document.metadata["page"])+1
+    return documents
+
+def guess_section(text:str)->str:
+    """
+    Guess the section heading a piece of text belongs to.
+
+    Policy documents are written as "Password Policy", "Refund Policy" and so
+    on. Capturing that heading lets a citation say "Section: Password Policy",
+    which is far more useful to a reader than a filename alone.
+
+    Args:
+        text: A chunk of document text.
+
+    Returns:
+        The heading we found, or an empty string if the text has no obvious
+        heading. We deliberately keep this simple: a wrong guess only affects
+        the citation label, never the answer itself.
+
+
+    """   
+
+    for raw_line in text.split("\n")[:15]:
+        line =raw_line.split()
+        # A heading is short, has a handful of words and does not end like a
+        # sentence. "4. PASSWORD POLICY" passes; "We reset passwords." fails.
+        if not (3 < len(line) <= 70) or line.endswith((".", ",", ";", ":")):
+            continue
+        if len(line.split()) > 8:
+            continue
+
+        # Does this line start like a numbered list item?
+        # Examples: "1. Hello", "2) World", "10.3.4 item"
+        # It matches: digits, optional ".digits" chunks, optional "." or ")" after the number,
+        # then at least one space, then a real word.
+        looks_numbered = re.match(r"^\d+(\.\d+)*[.)]?\s+\S", line) is not None
+        if line.isupper() or line.istitle() or looks_numbered:
+            # Strip a leading number so "4. Password Policy" becomes
+            # "Password Policy".
+            return re.sub(r"^\d+(\.\d+)*[.)]?\s+", "", line).strip()
+        
+    return ""
