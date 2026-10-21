@@ -1,6 +1,7 @@
 from pathlib import Path 
 from typing import List
 import os
+import re
 import logging
 from langchain_community.document_loaders import (
     Docx2txtLoader,
@@ -93,8 +94,32 @@ def load_documents_from_folder(folder_path:str |Path)->List[Document]:
     logger.info("loaded %d document pages from %s",len(all_documents),folder)
     return all_documents
 
-def clean_text():
-    pass
+def clean_text(text:str)->str:
+    """
+    Remove the noise that PDF and DOCX extraction usually leaves behind.
+
+    Raw extracted text is full of stray line breaks, repeated spaces and
+    hyphenated words split across lines. Cleaning it first means the chunks we
+    embed are closer to real sentences, which improves retrieval quality.
+
+    Args:
+        text: Raw text straight out of a document loader.
+
+    Returns:
+        The same text, tidied up.
+    """
+    if not text:
+        return " "
+    # Ex: "secu-\nrity" -> "security"
+    #this all is done base on the business standards what the company requires and what not 
+    text = re.sub(r"(\w+)-\n(\w+)", r"\1\2", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    return text.strip() #white sopace removed 
+
+    
+    
 
 def add_metadata():
     pass
