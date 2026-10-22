@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------------
+ 1. RECOMMENDED BUILD SEQUENCE
+-------------------------------------------------------------------------------
+
+  1.  requirements.txt
+      Install everything first so each file you write can be imported and run
+      immediately. (requirements-minimal.txt is the same list without PyTorch,
+      for machines where the cross-encoder cannot be installed.)
+
+  2.  .env.example
+      Define the setting names before anything reads them; copy it to .env and
+      add the OpenAI key now.
+
+  3.  config.py
+      Every other module imports it, so it must exist first.
+
+  4.  llm_client.py
+      Depends only on config.py, and both OpenAI models are needed by indexing
+      and retrieval later.
+
+  5.  data/documents/technova_support_policy.txt
+      You need at least one real document before you can write or test a loader.
+
+  6.  scripts/generate_sample_documents.py
+      Creates the PDF and DOCX samples so the loader has all three formats to
+      handle.
+
+  7.  src/__init__.py
+      Makes src importable before you add modules to it.
+
+  8.  src/ingestion.py
+      The first pipeline step and the only src module with no internal
+      dependencies.
+
+  9.  src/chunking.py
+      Imports ingestion.guess_section, so it comes directly after it.
+
+  10. src/indexing.py
+      Imports chunking and llm_client, and completes the indexing half of the
+      project.
+
+  11. scripts/build_index.py
+      First runnable milestone: learners build a real index and see output
+      before any retrieval code exists.
+
+  12. src/retrieval.py
+      Starts the query half, and needs an index to search against.
+
+  13. src/reranking.py
+      Consumes retrieval output; depends only on config.py.
+
+  14. src/refinement.py
+      Consumes reranker scores, so it must follow reranking.
+
+  15. src/memory.py
+      Small and standalone, but required by the pipeline's prompt and query
+      rewriting.
+
+  16. src/rag_pipeline.py
+      Imports all six modules above; write it once they all exist.
+
+  17. app.py
+      The UI layer; it only calls ingestion, indexing, memory and rag_pipeline.
