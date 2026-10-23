@@ -205,7 +205,7 @@ def hybrid_retrieve(
 
 
 
-def record_parent(
+def recover_parents(
         children: List[Document],
         parent_lookup: Dict[str, Document],
 ) -> List[Document]:
