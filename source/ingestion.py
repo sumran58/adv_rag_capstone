@@ -14,7 +14,8 @@ from langchain_core.documents import Document
 logger=logging.getLogger(__name__)  #whenever logs wll get fcreated for this file it will be created with this file name
 
 
-SUPPORTED_EXTENSION=['.pdf','.txt','.docx']
+SUPPORTED_EXTENSIONS={'.pdf','.txt','.docx'}
+
 def load_document(file_path:str | Path)->List[Document]:
     """
     Load a single PDF, TXT or DOCX file into LangChain Documents.
@@ -37,9 +38,9 @@ def load_document(file_path:str | Path)->List[Document]:
 
     path=Path(file_path) #converting the file path in the path so that we can perform some operation swhich path supports 
     extension=path.suffix.lower() #security_lower.pdf ->.pdf
-    if extension not in SUPPORTED_EXTENSION:
+    if extension not in SUPPORTED_EXTENSIONS:
         raise ValueError(f" unsupported file extension {extension}."
-                         f" and suuported ones are :{','.join(sorted(SUPPORTED_EXTENSION))} ")
+                         f" and suuported ones are :{','.join(sorted(SUPPORTED_EXTENSIONS))} ")
 
     if not path.exists():
         raise FileNotFoundError(f" file is not found here :{path}")
@@ -85,7 +86,7 @@ def load_documents_from_folder(folder_path:str |Path)->List[Document]:
     all_documents:List[Document]=[]
 
     for file_path in sorted(folder.iterdir()):
-        if file_path.suffix.lower() not in SUPPORTED_EXTENSION:
+        if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
             continue
         try:
             all_documents.extend(load_document(file_path))
@@ -165,7 +166,7 @@ def guess_section(text:str)->str:
     """   
 
     for raw_line in text.split("\n")[:15]:
-        line =raw_line.split()
+        line = raw_line.strip()
         # A heading is short, has a handful of words and does not end like a
         # sentence. "4. PASSWORD POLICY" passes; "We reset passwords." fails.
         if not (3 < len(line) <= 70) or line.endswith((".", ",", ";", ":")):

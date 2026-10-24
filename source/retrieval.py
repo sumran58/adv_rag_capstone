@@ -164,7 +164,7 @@ def fuse_results(ranked_lists: List[List[Document]], top_k: int) -> List[Documen
     """
     rrf_constant=60
     scores:Dict[str,float]={} 
-    documents=Dict[str,Document]={}
+    documents: Dict[str, Document] = {}
 
     for ranked_list in ranked_lists:
         for position,document in enumerate(ranked_list):

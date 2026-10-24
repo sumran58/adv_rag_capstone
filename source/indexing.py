@@ -6,7 +6,7 @@ from langchain_core.documents import Document
 import config
 from langchain_core.vectorstores import VectorStore
 from llm_client import get_embedding_model
-from chunking import split_documents
+from source.chunking import split_documents
 logger=logging.getLogger(__name__)
 
 def _documents_to_dicts(documents:List[Document])->List[dict]:
@@ -110,7 +110,7 @@ def create_vector_store(children: List[Document]) -> VectorStore:
     embeddings=get_embedding_model()
 
     if config.VECTOR_DB=="faiss":
-        store=_faiss_class.from_documents(children,embeddings)
+        store = _faiss_class().from_documents(children, embeddings)
         config.FAISS_DIR.mkdir(parents=True,exist_ok=True)
         store.save_local(str(config.FAISS_DIR))
         return store

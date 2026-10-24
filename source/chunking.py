@@ -28,7 +28,7 @@ def make_splitter(chunk_size:int,chunk_overlap:int)->RecursiveCharacterTextSplit
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         separators =["\n\n", "\n", ". ", "! ", "? ", "; ", " ", ""],
-        length_fucntion=len
+        length_function=len
     )
 
 def split_documents(documents:List[Document])->Tuple[List[Document], List[Document]]:

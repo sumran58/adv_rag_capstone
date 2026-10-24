@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 import config 
 
 logger=logging.getLogger(__name__)
-_cross_encoder=True
+_cross_encoder_works = True
 _fallback_reason=""
 
 # Words that appear in almost every sentence and so say nothing about

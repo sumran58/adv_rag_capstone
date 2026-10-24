@@ -132,7 +132,7 @@ def format_context(documents:List[Document])->str:
         )
      return "\n\n".join(blocks)
 
-def refine_content(documents:List[Document])->Tuple[List[Document],str]:
+def refine_context(documents:List[Document])->Tuple[List[Document],str]:
     """
     Run the full refinement step: filter, budget, then format.
 

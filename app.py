@@ -1,6 +1,7 @@
 import logging
 
 import streamlit as st
+import traceback
 
 import config
 from source.indexing import (
@@ -10,7 +11,10 @@ from source.indexing import (
     index_summary,
     update_index,
 )
-from source.ingestion import SUPPORTED_EXTENSIONS, load_documents_from_folder
+from source.ingestion import (
+    SUPPORTED_EXTENSIONS,
+    load_documents_from_folder,
+)
 from source.memory import add_exchange, clear_memory, create_memory
 from source.rag_pipeline import answer_question, load_pipeline
 from source.reranking import reranker_status
@@ -183,10 +187,12 @@ def run_build() -> None:
     """
     try:
         with st.spinner("Loading documents, chunking and embedding..."):
-            documents = load_documents_from_folder(config.DOCUMENTS_DIR)
+            documents = load_documents_from_folder(config.DOCUMENT_DIR)
             stats = build_index(documents)
 
         st.session_state.pipeline = None
+
+
         st.success(
             f"Indexed {stats['documents']} pages -> {stats['parents']} parent chunks "
             f"-> {stats['children']} child chunks."
@@ -204,7 +210,7 @@ def run_update() -> None:
     """
     try:
         with st.spinner("Adding new documents to the index..."):
-            documents = load_documents_from_folder(config.DOCUMENTS_DIR)
+            documents = load_documents_from_folder(config.DOCUMENT_DIR)
             stats = update_index(documents)
 
         st.session_state.pipeline = None
@@ -350,6 +356,8 @@ def main() -> None:
                 result = answer_question(question, pipeline, st.session_state.memory)
             except Exception as error:
                 st.error(f"Something went wrong: {error}")
+                st.code(traceback.format_exc())
+                print(traceback.format_exc())
                 return
 
         st.markdown(result["answer"])

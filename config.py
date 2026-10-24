@@ -32,7 +32,7 @@ DOC_STORE_PATH = VECTORSTORE_DIR / "doc_store.json"
 # Models
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_CHAT_MODEL = os.getenv(
-    "GROQ_CHAT_MODEL", "llama-3.3-70b-versatile"
+    "GROQ_CHAT_MODEL", "openai/gpt-oss-120b"
 )
 
 EMBEDDING_MODEL = os.getenv(
@@ -105,7 +105,7 @@ def check_pinecone_config() -> None:
             )
 
 
-def describe_setting() -> dict:
+def describe_settings() -> dict:
     return {
         "Chat model": GROQ_CHAT_MODEL,
         "Embedding model": EMBEDDING_MODEL,

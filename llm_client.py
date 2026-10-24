@@ -2,7 +2,7 @@ from functools import lru_cache
 from langchain_groq import ChatGroq
 import config
 from langchain_huggingface import HuggingFaceEmbeddings
-@lru_cache(max_size=1)
+@lru_cache(maxsize=1)
 #lru cahcahe= when we call the ssame function with the same arguments we dont have to calculate the results again and again so here helps the lru cacche
 def get_chat_model()->ChatGroq:
     """Create (or reuse) the OpenAI chat model used for every LLM call.
